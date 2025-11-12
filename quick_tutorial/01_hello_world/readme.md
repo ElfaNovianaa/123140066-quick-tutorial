@@ -1,14 +1,5 @@
 # Percobaan 1 – Single-File Web Application (Pyramid)
 
-**Framework:** Pyramid  
-**Server:** Waitress  
-**Tujuan:** Membuat dan memahami aplikasi web paling sederhana menggunakan Pyramid hanya dengan satu file (`app.py`).
-
-**Referensi Tutorial Asli:**  
-[Pyramid Quick Tutorial – Hello World](https://docs.pylonsproject.org/projects/pyramid/en/latest/quick_tutorial/hello_world.html)
-
----
-
 ## Arsitektur Dasar
 
 Aplikasi “Hello World” di Pyramid sudah mencakup semua komponen penting dari sebuah web app:
@@ -76,6 +67,7 @@ WSGI terinspirasi oleh model lama CGI (*Common Gateway Interface*) dari web serv
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 07 08_fd03bfc2](https://github.com/user-attachments/assets/8ebe1833-35c2-4b20-8068-95073275118e)
+
 
 
 
