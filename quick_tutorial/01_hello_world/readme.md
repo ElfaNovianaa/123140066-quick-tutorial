@@ -44,11 +44,11 @@ Analisis: pendekatan ini mencerminkan **resource safety** dan **explicit configu
 
 **Lines 6–8 (fungsi view `hello_world`)**
 Fungsi ini menjadi titik utama interaksi antara pengguna dan aplikasi. View hanya fokus pada satu tugas: menerima request dan menghasilkan response.  
-Analisis: ini menegaskan prinsip **separation of concerns**, di mana logika bisnis dan logika routing dipisahkan. Selain itu, penggunaan `Response` secara eksplisit menunjukkan bahwa Pyramid memberi kontrol penuh terhadap isi dan format HTTP response — cocok untuk arsitektur modern seperti RESTful API.
+Analisis: ini menegaskan prinsip **separation of concerns**, di mana logika bisnis dan logika routing dipisahkan. Selain itu, penggunaan `Response` secara eksplisit menunjukkan bahwa Pyramid memberi kontrol penuh terhadap isi dan format HTTP response.
 
 **Lines 15–17 (server Waitress menjalankan WSGI app)**
 Bagian ini menampilkan bagaimana Pyramid memisahkan tanggung jawab antara server dan aplikasi. Waitress berfungsi sebagai *HTTP server* yang hanya menyalurkan request ke aplikasi WSGI Pyramid.  
-Analisis: desain ini mencerminkan filosofi **WSGI decoupling** — artinya aplikasi tidak terikat pada satu server tertentu, dan bisa dipindahkan ke Gunicorn, uWSGI, atau server lain tanpa ubahan kode. Ini meningkatkan **portabilitas dan fleksibilitas deployment**.
+Analisis: desain ini mencerminkan filosofi **WSGI decoupling** artinya aplikasi tidak terikat pada satu server tertentu, dan bisa dipindahkan ke Gunicorn, uWSGI, atau server lain tanpa ubahan kode. Ini meningkatkan **portabilitas dan fleksibilitas deployment**.
 
 ---
 
@@ -76,6 +76,7 @@ WSGI terinspirasi oleh model lama CGI (*Common Gateway Interface*) dari web serv
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 07 08_fd03bfc2](https://github.com/user-attachments/assets/8ebe1833-35c2-4b20-8068-95073275118e)
+
 
 
 
