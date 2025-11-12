@@ -1,4 +1,4 @@
-# Percobaan 5: Unit Tests and pytest
+# Percobaan 5 - Unit Tests and pytest
 
 ## Deskripsi Singkat
 Percobaan ini bertujuan untuk mengimplementasikan **unit testing** pada proyek Pyramid menggunakan **pytest**. Dengan menambahkan `pytest` ke dalam dependensi proyek, pengujian kode dapat dilakukan secara otomatis tanpa harus menjalankan aplikasi di browser. Pengujian ini memastikan setiap fungsi dalam aplikasi berjalan sesuai harapan dan membantu mendeteksi bug sejak dini.
@@ -19,3 +19,4 @@ Melalui percobaan ini, dapat disimpulkan bahwa **unit testing** merupakan bagian
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 52 28_600fa7e9](https://github.com/user-attachments/assets/41577438-9690-4ada-8885-f55f884b06ee)
+
