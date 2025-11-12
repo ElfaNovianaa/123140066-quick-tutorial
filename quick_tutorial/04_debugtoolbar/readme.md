@@ -1,4 +1,4 @@
-# Percobaan 4: Easier Development with Debug Toolbar
+# Percobaan 4 - Easier Development with Debug Toolbar
 
 ## Deskripsi Singkat
 Pada percobaan ini, kita menambahkan add-on **pyramid_debugtoolbar** ke dalam proyek Pyramid untuk membantu proses pengembangan dan debugging aplikasi. Add-on ini menampilkan toolbar di sisi kanan browser yang memberikan informasi detail tentang konfigurasi aplikasi, routing, request, dan error yang terjadi.  
@@ -10,3 +10,4 @@ Dari sisi konfigurasi, pyramid_debugtoolbar diaktifkan melalui development.ini m
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 16 59 32_eb277d71](https://github.com/user-attachments/assets/d9ef5dd8-0dcf-4778-ac6a-a016cd5d8858)
+
