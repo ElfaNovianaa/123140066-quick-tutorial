@@ -41,24 +41,23 @@ Struktur kode minimal pada percobaan ini bisa dijelaskan seperti berikut:
 
 ---
 
-## Penjelasan kode
+## Analisis Kode Pyramid "Hello World"
 
-### Baris Penting
+### **Line 11 (`if __name__ == '__main__':`)**
+Bagian ini menunjukkan desain modular pada Pyramid. Dengan memisahkan titik eksekusi utama dari definisi modul, developer bisa menjalankan aplikasi secara langsung **atau** mengimpor file tersebut ke proyek lain tanpa menjalankan server otomatis.  
+➡️ Analisis: ini mencerminkan prinsip **reusability** dan **encapsulation**, memungkinkan pengembangan skala besar tanpa saling ketergantungan antar-komponen.
 
-- **Line 11:** `if __name__ == '__main__':`  
-  Artinya, bagian ini hanya akan dijalankan ketika file dipanggil langsung, bukan saat diimpor oleh modul lain.
+### **Lines 12–14 (context manager Configurator)**
+Penggunaan *context manager* (`with Configurator() as config:`) memastikan konfigurasi aplikasi dilakukan dalam ruang lingkup yang aman dan terkontrol. Setelah konteks selesai, semua pengaturan akan dirapikan secara otomatis oleh Pyramid.  
+➡️ Analisis: pendekatan ini mencerminkan **resource safety** dan **explicit configuration**, mencegah konfigurasi bersifat global atau tidak sengaja terbawa antar-modul. Hal ini mendukung maintainability jangka panjang.
 
-- **Lines 12–14:**  
-  Menggunakan *context manager* untuk membuat dan mengatur konfigurasi route dan view.
+### **Lines 6–8 (fungsi view `hello_world`)**
+Fungsi ini menjadi titik utama interaksi antara pengguna dan aplikasi. View hanya fokus pada satu tugas: menerima request dan menghasilkan response.  
+➡️ Analisis: ini menegaskan prinsip **separation of concerns**, di mana logika bisnis dan logika routing dipisahkan. Selain itu, penggunaan `Response` secara eksplisit menunjukkan bahwa Pyramid memberi kontrol penuh terhadap isi dan format HTTP response — cocok untuk arsitektur modern seperti RESTful API.
 
-- **Lines 6–8:**  
-  Mengimplementasikan view function (`hello_world`) yang menghasilkan `Response`.
-
-- **Lines 15–17:**  
-  Menjalankan server HTTP yang menerbitkan aplikasi WSGI ke jaringan lokal.
-
-**Kesimpulan penting:**  
-`Configurator` adalah pusat dari pengembangan Pyramid. Aplikasi dibangun dari bagian-bagian yang longgar (*loosely coupled*) melalui *Application Configuration*.
+### **Lines 15–17 (server Waitress menjalankan WSGI app)**
+Bagian ini menampilkan bagaimana Pyramid memisahkan tanggung jawab antara server dan aplikasi. Waitress berfungsi sebagai *HTTP server* yang hanya menyalurkan request ke aplikasi WSGI Pyramid.  
+➡️ Analisis: desain ini mencerminkan filosofi **WSGI decoupling** — artinya aplikasi tidak terikat pada satu server tertentu, dan bisa dipindahkan ke Gunicorn, uWSGI, atau server lain tanpa ubahan kode. Ini meningkatkan **portabilitas dan fleksibilitas deployment**.
 
 ---
 
@@ -66,19 +65,19 @@ Struktur kode minimal pada percobaan ini bisa dijelaskan seperti berikut:
 
 Beberapa eksperimen tambahan untuk memperdalam pemahaman:
 
-### A. Kenapa `print('Incoming request')` dan bukan `print 'Incoming request'`?
+### A. Why do we do this `print('Incoming request')` ...instead of: `print 'Incoming request'`?
 Karena Python 3 mengharuskan penggunaan tanda kurung pada fungsi `print()`.  
 Tanpa tanda kurung (`print '...'`) hanya valid di Python 2.
 
-### B. Apa yang terjadi jika kita return tipe selain `Response`?
+### B. What happens if you return a string of HTML? A sequence of integers?
 - Jika return berupa **string HTML**, Pyramid otomatis mengubahnya menjadi `Response`.
 - Jika return berupa **angka atau list**, akan muncul **TypeError**, karena tidak bisa dikonversi menjadi respons HTTP yang valid.
 
-### C. Coba kesalahan sintaks:
+### C. Put something invalid, such as print xyz, in the view function. Kill your python app.py with ctrl-C and restart, then reload your browser. See the exception in the console?
 Masukkan baris seperti `print xyz` di dalam fungsi view, lalu jalankan ulang server (`Ctrl+C` → `python app.py`).
 Ketika browser di-*reload*, error akan muncul di terminal (traceback), menunjukkan mekanisme debug Pyramid.
 
-### D. Arti “GI” pada WSGI:
+### D. The GI in WSGI stands for "Gateway Interface". What web standard is this modelled after?
 **GI = Gateway Interface**, yaitu standar komunikasi antara server web dan aplikasi Python.
 WSGI terinspirasi oleh model lama CGI (*Common Gateway Interface*) dari web server tradisional.
 
@@ -86,5 +85,6 @@ WSGI terinspirasi oleh model lama CGI (*Common Gateway Interface*) dari web serv
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 07 08_fd03bfc2](https://github.com/user-attachments/assets/8ebe1833-35c2-4b20-8068-95073275118e)
+
 
 
