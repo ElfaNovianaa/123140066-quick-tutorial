@@ -19,6 +19,9 @@ Percobaan ini menunjukkan pentingnya pemisahan struktur kode pada aplikasi web P
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 16 55 20_c2dace2f](https://github.com/user-attachments/assets/9625801a-868d-4141-a731-5db888065d74)
+
 ![Gambar WhatsApp 2025-11-12 pukul 16 58 37_4fb735f7](https://github.com/user-attachments/assets/11027f50-299a-4620-bc4d-2a820b76ded1)
+
 ![Gambar WhatsApp 2025-11-12 pukul 16 58 54_3bf7501e](https://github.com/user-attachments/assets/b4dba03a-46b1-45b1-9d95-8ae85f65d64b)
+
 
