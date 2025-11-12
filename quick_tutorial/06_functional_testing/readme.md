@@ -1,4 +1,4 @@
-# Percobaan 6: Functional Testing with WebTest
+# Percobaan 6 - Functional Testing with WebTest
 
 ## Deskripsi Singkat
 Percobaan ini bertujuan untuk melakukan **pengujian fungsional (functional testing)** pada aplikasi Pyramid menggunakan **WebTest**. Berbeda dengan unit test yang hanya menguji potongan kecil kode, functional test memeriksa keseluruhan alur aplikasi dari awal hingga akhir, termasuk respons HTML yang dikembalikan. WebTest mensimulasikan permintaan HTTP tanpa perlu menjalankan server sesungguhnya, sehingga proses pengujian tetap cepat dan efisien.
@@ -17,3 +17,4 @@ Percobaan ini menunjukkan pentingnya **functional testing** dalam memastikan kua
 
 ## Output Percobaan 
 ![Gambar WhatsApp 2025-11-12 pukul 16 10 52_1bb65599](https://github.com/user-attachments/assets/9d63a140-7cc8-4e91-bdb2-c4a2a165266e)
+
