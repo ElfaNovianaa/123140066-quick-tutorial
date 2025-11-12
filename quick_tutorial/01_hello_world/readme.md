@@ -9,15 +9,6 @@
 
 ---
 
-## Tujuan Percobaan
-Percobaan ini bertujuan untuk:
-- Memahami alur kerja dasar aplikasi web berbasis Pyramid.  
-- Menjalankan aplikasi “Hello World” dengan konsep _routing_, _view_, dan _response_.  
-- Mengenali hubungan antara Pyramid, WSGI, dan web server (Waitress).  
-- Menjadi dasar untuk pengembangan aplikasi yang lebih kompleks.
-
----
-
 ## Arsitektur Dasar
 
 Aplikasi “Hello World” di Pyramid sudah mencakup semua komponen penting dari sebuah web app:
@@ -95,4 +86,5 @@ WSGI terinspirasi oleh model lama CGI (*Common Gateway Interface*) dari web serv
 
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 07 08_fd03bfc2](https://github.com/user-attachments/assets/8ebe1833-35c2-4b20-8068-95073275118e)
+
 
