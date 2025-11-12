@@ -1,4 +1,4 @@
-# Percobaan 3 – Application Configuration with `.ini` Files
+# Percobaan 3 – Application Configuration with .ini Files
 
 ## Deskripsi Singkat
 Percobaan ini memperkenalkan cara **menjalankan aplikasi Pyramid menggunakan file konfigurasi `.ini`** dan perintah `pserve`.  
@@ -44,12 +44,11 @@ Secara keseluruhan, percobaan ini memperlihatkan bagaimana Pyramid mengintegrasi
 
 ---
 
-## 📸 Output Percobaan
+## Output Percobaan
 
 ![Gambar WhatsApp 2025-11-12 pukul 15 39 14_65c33026](https://github.com/user-attachments/assets/1e7e897b-86bd-4bac-a867-facbeca51128)
 
 ---
 
-📌 **Kesimpulan:**  
+**Kesimpulan:**  
 Pyramid kini beralih ke sistem berbasis konfigurasi `.ini` yang membuat proses pengaturan aplikasi lebih efisien dan terstandarisasi.  
-Langkah ini memisahkan logika aplikasi dari pengaturan server, sehingga proyek lebih mudah dikembangkan dan dikelola di berbagai lingkungan.
