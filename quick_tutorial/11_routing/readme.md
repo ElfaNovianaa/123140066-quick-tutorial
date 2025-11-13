@@ -6,9 +6,23 @@ Percobaan ini berfokus pada mekanisme **routing** di framework Pyramid, yaitu pr
 ---
 
 ## Analisis
-Percobaan ini memperlihatkan bagaimana Pyramid menangani **replacement pattern** dalam deklarasi route menggunakan sintaks `{}`. Pada file `__init__.py`, route `/howdy/{first}/{last}` membuat Pyramid secara otomatis memetakan bagian URL ke dalam dictionary `matchdict`. Nilai tersebut dapat diambil di view menggunakan `self.request.matchdict['first']` dan `self.request.matchdict['last']`.  
-Hal ini membuat sistem routing lebih dinamis dan fleksibel karena URL bisa membawa informasi secara langsung tanpa perlu query string. Dari sisi tampilan, data tersebut diteruskan ke template dan dirender ke halaman HTML.  
-Pengujian memastikan bahwa data dari URL (`Jane`, `Doe`) berhasil ditangkap dan ditampilkan dengan benar di halaman. Mekanisme ini menunjukkan kekuatan Pyramid dalam memisahkan logika URL dan tampilan secara bersih serta mudah diatur.
+1. Ekstraksi Data URL (config.add_route):
+- Definisi route di __init__.py diubah menjadi config.add_route('home', '/howdy/{first}/{last}').
+- Bagian dalam kurung kurawal ({...}) adalah Replacement Patterns. Ketika Pyramid mencocokkan URL seperti /howdy/Jane/Doe, ia secara otomatis mengekstrak Jane dan Doe sebagai data variabel.
+2. Akses Data View (request.matchdict):
+- Data yang diekstrak oleh router disimpan dalam dictionary khusus pada objek request: self.request.matchdict.
+- View mengakses data ini menggunakan kunci yang sesuai dengan nama pattern di route (self.request.matchdict['first']).
+3. Penggunaan Data Template:
+- Data dari matchdict dilewatkan ke dictionary yang dikembalikan view ({'first': first, 'last': last}).
+- Template (home.pt) kemudian menggunakan sintaks Chameleon (${first}, ${last}) untuk menyisipkan data tersebut ke dalam HTML.
+4. Dampak pada Pengujian:
+- Unit Test: Untuk menguji view yang bergantung pada data URL, DummyRequest harus diinisialisasi secara manual dengan data di request.matchdict sebelum view dipanggil. Ini mensimulasikan hasil dari proses routing Pyramid.
+- Functional Test: Test cukup mengirim request ke URL yang memiliki data variabel (misalnya /howdy/Jane/Doe), dan WebTest memastikan response body mengandung data tersebut.
+
+## Extra Credit
+- Apa yang terjadi jika Anda pergi ke URL http://localhost:6543/howdy? Apakah ini hasil yang Anda harapkan?
+* Hasil: Pyramid akan mengembalikan status code 404 Not Found.
+* Ekspektasi: Hasil ini sudah benar dan diharapkan, karena route yang didefinisikan (/howdy/{first}/{last}) memerlukan dua segmen tambahan. URL /howdy tidak cocok dengan pattern yang memerlukan tiga segmen. Jika kita ingin /howdy juga bekerja, kita perlu mendefinisikan route tambahan (misalnya config.add_route('howdy_base', '/howdy')).
 
 ---
 
@@ -21,4 +35,5 @@ Percobaan ini membuktikan bahwa sistem **routing Pyramid** sangat efisien untuk 
 ![Gambar WhatsApp 2025-11-12 pukul 19 05 27_69551574](https://github.com/user-attachments/assets/5f12a3f7-487b-45fb-a4c3-7a59c6fb1139)
 
 ![Gambar WhatsApp 2025-11-12 pukul 19 06 17_d4075409](https://github.com/user-attachments/assets/30f03815-3ce7-48af-8f5b-9c17a55240a7)
+
 
