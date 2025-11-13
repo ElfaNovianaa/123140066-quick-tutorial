@@ -1,4 +1,4 @@
-# 🧩 Percobaan 2 – Python Packages for Pyramid Applications
+# Percobaan 2 – Python Packages for Pyramid Applications
 
 ## Deskripsi Singkat
 Percobaan ini melanjutkan proyek **Pyramid Hello World** sebelumnya, dengan fokus pada **pengorganisasian kode menggunakan Python package dan project structure yang benar**.  
@@ -74,20 +74,26 @@ http://localhost:6543/
 
 ## Analisis
 
-Percobaan ini menunjukkan pentingnya struktur proyek yang terorganisir dalam pengembangan Python modern.  
-Sebelumnya kita hanya menjalankan satu file sederhana, sekarang proyek dibentuk dalam struktur *package* agar dapat diinstal, diuji, dan dikembangkan lebih lanjut.
+Percobaan ini menunjukkan pentingnya struktur proyek yang terorganisir dalam pengembangan Python modern.
+Sebelumnya kita hanya menjalankan satu file sederhana, sekarang proyek dibentuk dalam struktur package agar dapat diinstal, diuji, dan dikembangkan lebih lanjut.
+1. Peran __init__.py
+File ini membuat direktori dikenali sebagai package oleh Python. Tanpa file ini, direktori tutorial hanya dianggap sebagai folder biasa, bukan bagian dari namespace Python.
+2. Fungsi setup.py
+File ini digunakan untuk mendeskripsikan project, seperti nama dan dependensi.
+Dengan menjalankan pip install -e ., proyek akan diinstal dalam mode editable, artinya setiap perubahan kode langsung diterapkan tanpa instal ulang.
+Hal ini sangat membantu selama proses pengembangan.
+3. Menjalankan python tutorial/app.py
+Cara ini digunakan di percobaan untuk mempermudah pemahaman alur program, tapi bukan praktik yang disarankan dalam proyek sebenarnya.
+Menjalankan modul di dalam package secara langsung bisa menyebabkan masalah pada namespace dan impor relatif.
+Pada tahap lebih lanjut, aplikasi Pyramid sebaiknya dijalankan menggunakan command seperti pserve agar lebih sesuai standar WSGI.
+4. Perbedaan antara module, package, dan project
+- Module adalah satu file Python (.py) seperti app.py.
+- Package adalah direktori yang memiliki __init__.py, seperti tutorial.
+- Project adalah keseluruhan struktur yang berisi package dan file konfigurasi seperti setup.py.
 
----
+Kesimpulan Analisis
+- Struktur package membuat kode lebih rapi dan mudah dikembangkan.
+- File setup.py memungkinkan integrasi dengan sistem packaging Python dan mempermudah instalasi.
+- Menjalankan aplikasi langsung dari file masih digunakan hanya untuk pembelajaran.
+- Percobaan ini menjadi dasar untuk langkah selanjutnya, yaitu menjalankan aplikasi Pyramid dengan konfigurasi yang lebih profesional.
 
-### Peran `__init__.py`
-File ini membuat direktori dikenali sebagai *package* oleh Python.  
-Tanpa file ini, direktori `tutorial` hanya dianggap sebagai folder biasa, bukan bagian dari *namespace* Python.
-
----
-
-### Fungsi `setup.py`
-File ini digunakan untuk mendeskripsikan proyek, seperti nama dan dependensi.  
-Dengan menjalankan perintah:
-
-```bash
-pip install -e .
