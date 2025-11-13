@@ -117,10 +117,14 @@ http://localhost:6543/
 ## Output Percobaaan
 ![Gambar WhatsApp 2025-11-12 pukul 16 59 30_1b64e320](https://github.com/user-attachments/assets/4260e6a1-3049-47bc-957f-fec96c1d12ed)
 
+![Gambar WhatsApp 2025-11-12 pukul 15 46 30_8007fd40](https://github.com/user-attachments/assets/0fd425fe-cd0d-4016-943a-658584013a66)
+
+
 ## Kesimpulan
 - pyramid_debugtoolbar adalah add-on penting untuk debugging selama pengembangan.
 - Dapat diaktifkan hanya melalui konfigurasi .ini tanpa ubah kode.
 - extras_require memungkinkan pemisahan dependensi development dan production.
 - Toolbar memberikan visualisasi error dan request-response yang sangat membantu developer.
+
 
 
