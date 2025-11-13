@@ -18,7 +18,7 @@ Penerapan templating memengaruhi Unit Test:
 ```bash
 self.assertEqual('Home View', response['name'])
 ```
-Functional Test: Tetap menguji hasil akhir HTML, memverifikasi bahwa renderer telah menyuntikkan data dengan benar (misalnya, self.assertIn(b'<h1>Hi Home View', res.body)).
+Functional Test: Tetap menguji hasil akhir HTML, memverifikasi bahwa renderer telah menyuntikkan data dengan benar
 3. Keuntungan Modularitas
 Memisahkan view dan template menciptakan kode yang lebih modular dan lebih mudah dirawat (Maintenance). Perubahan desain HTML tidak memerlukan modifikasi pada kode Python, dan sebaliknya.
 
@@ -33,4 +33,5 @@ Percobaan ini menunjukkan bahwa penggunaan templating pada Pyramid sangat memban
 ![Gambar WhatsApp 2025-11-12 pukul 17 06 35_01ac303a](https://github.com/user-attachments/assets/a010bde3-335b-4e33-bfdf-5c6070d53208)
 
 ![Gambar WhatsApp 2025-11-12 pukul 17 06 48_0e5b8c9c](https://github.com/user-attachments/assets/da33c417-824c-4edb-98f9-0d57415a09e7)
+
 
