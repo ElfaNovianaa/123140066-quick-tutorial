@@ -1,46 +1,93 @@
-# Percobaan 2 – Arsitektur Dasar Pyramid
+# 🧩 Percobaan 2 – Python Packages for Pyramid Applications
 
 ## Deskripsi Singkat
-Percobaan ini membahas dasar **arsitektur proyek Pyramid** dengan fokus pada pembentukan struktur paket (`package`) dan penggunaan **file setup.py** untuk pengaturan proyek.  
-Langkah ini merupakan kelanjutan dari percobaan pertama yang sebelumnya hanya berisi file tunggal tanpa struktur modular.
+Percobaan ini melanjutkan proyek **Pyramid Hello World** sebelumnya, dengan fokus pada **pengorganisasian kode menggunakan Python package dan project structure yang benar**.  
+Tujuannya adalah memahami bagaimana modul Pyramid dikemas dalam bentuk *package* dan diinstal secara lokal (*editable mode*) agar mudah dikembangkan.
 
 ---
 
-## Arsitektur Dasar
-Struktur proyek dibuat dengan pendekatan **Python Package**, di mana seluruh kode aplikasi dikelompokkan dalam satu direktori utama bernama `tutorial`.  
-File penting yang digunakan pada tahap ini adalah `setup.py`, yang berfungsi untuk:
-- Menghubungkan proyek dengan sistem manajemen paket Python (setuptools)
-- Mengatur instalasi dependensi dan konfigurasi aplikasi
-- Memungkinkan instalasi dalam mode pengembangan menggunakan `pip install -e .`
+## Tujuan
+1. Membuat direktori Python package yang berisi `__init__.py`.
+2. Membuat file `setup.py` untuk mendefinisikan project.
+3. Menginstal project dalam *development mode* menggunakan `pip install -e .`.
+4. Menjalankan aplikasi Pyramid dengan struktur proyek yang terorganisir.
 
 ---
 
-## Penjelasan Kode Utama
-Kode utama masih berisi aplikasi Pyramid sederhana, serupa dengan percobaan pertama.  
-Perbedaannya hanya terletak pada struktur dan cara instalasinya, bukan pada logika aplikasi.
+## Langkah-langkah Percobaan
 
-- **`tutorial/app.py`** berisi konfigurasi Pyramid serta fungsi utama untuk menjalankan server.
-- **`__init__.py`** menandai direktori `tutorial` sebagai package Python yang dapat diimpor.
-- **`setup.py`** berisi metadata proyek seperti nama, versi, dependensi, dan entry point untuk eksekusi.
+1. Membuat Direktori Proyek
+```bash
+cd ..
+mkdir package
+cd package
+```
+2. Membuat File Setup.py
+```bash
+from setuptools import setup
 
----
+requires = [
+    'pyramid',
+    'waitress',
+]
+
+setup(
+    name='tutorial',
+    install_requires=requires,
+)
+```
+3. Instalasi Proyek dalam Mode Pengembangan
+```bash
+$VENV/bin/pip install -e .
+```
+4. Membuat direktori package
+```bash
+mkdir tutorial
+```
+5. Membuat file tutorial/__init__.py
+```bash
+# package
+```
+6. Membuat file aplikasi tutorial/app.py
+```bash
+from waitress import serve
+from pyramid.config import Configurator
+from pyramid.response import Response
+
+def hello_world(request):
+    print('Incoming request')
+    return Response('<body><h1>Hello World!</h1></body>')
+
+if __name__ == '__main__':
+    with Configurator() as config:
+        config.add_route('hello', '/')
+        config.add_view(hello_world, route_name='hello')
+        app = config.make_wsgi_app()
+    serve(app, host='0.0.0.0', port=6543)
+```
+7. Menjalankan aplikasi
+```bash
+$VENV/bin/python tutorial/app.py
+```
+Kemudian buka browser dan akses:
+http://localhost:6543/
 
 ## Analisis
-- Struktur modular: Pembuatan package tutorial membuat proyek lebih terorganisir dan mudah dikembangkan.
-- setup.py sebagai pengatur proyek: File ini menjadi jembatan antara kode dan sistem manajemen paket Python, mendukung instalasi dengan pip install -e . (editable mode).
-- Konsistensi logika: Walau struktur berubah menjadi package, fungsionalitas aplikasi tetap sama seperti sebelumnya.
-- Pendekatan profesional: Langkah ini merupakan transisi dari proyek sederhana menuju struktur aplikasi Pyramid yang sesuai standar industri.
-- Eksekusi sementara: Menjalankan python tutorial/app.py masih diperbolehkan di tahap pembelajaran, tetapi di dunia nyata, Pyramid sebaiknya dijalankan melalui pserve untuk keamanan dan kompatibilitas yang lebih baik.
+
+Percobaan ini menunjukkan pentingnya struktur proyek yang terorganisir dalam pengembangan Python modern.  
+Sebelumnya kita hanya menjalankan satu file sederhana, sekarang proyek dibentuk dalam struktur *package* agar dapat diinstal, diuji, dan dikembangkan lebih lanjut.
 
 ---
 
-## Kesimpulan
-Percobaan ini menekankan pentingnya struktur paket dan pengaturan proyek menggunakan setup.py dalam pengembangan aplikasi Pyramid.
-Dengan cara ini, proyek menjadi lebih terkelola, fleksibel, serta siap untuk dikembangkan ke tahap berikutnya.
+### Peran `__init__.py`
+File ini membuat direktori dikenali sebagai *package* oleh Python.  
+Tanpa file ini, direktori `tutorial` hanya dianggap sebagai folder biasa, bukan bagian dari *namespace* Python.
 
 ---
 
-## Output percobaan
-![Gambar WhatsApp 2025-11-12 pukul 15 17 27_95d03d53](https://github.com/user-attachments/assets/59274154-6ce7-4c58-9715-fc6f168f0958)
+### Fungsi `setup.py`
+File ini digunakan untuk mendeskripsikan proyek, seperti nama dan dependensi.  
+Dengan menjalankan perintah:
 
-
+```bash
+pip install -e .
