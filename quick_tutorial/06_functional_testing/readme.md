@@ -1,10 +1,7 @@
 # Percobaan 06 – Functional Testing dengan WebTest
 
-Dokumen ini menjelaskan implementasi **Pengujian Fungsional (Functional Testing)** menggunakan library **`WebTest`** di proyek Pyramid. Pengujian fungsional mensimulasikan interaksi pengguna dengan aplikasi secara menyeluruh, memastikan seluruh alur aplikasi bekerja dengan benar.
-
----
-
 ## Deskripsi Singkat
+Percobaan ini menjelaskan implementasi **Pengujian Fungsional (Functional Testing)** menggunakan library **`WebTest`** di proyek Pyramid. Pengujian fungsional mensimulasikan interaksi pengguna dengan aplikasi secara menyeluruh, memastikan seluruh alur aplikasi bekerja dengan benar.
 
 **Functional Test** berbeda dari *unit test* karena ia menguji *seluruh alur aplikasi*—dari menerima *request* hingga menghasilkan *response* HTML lengkap—tanpa perlu menjalankan server HTTP aktual (seperti Waitress atau Gunicorn).
 
@@ -118,5 +115,6 @@ Hal ini karena:
 
 ## Output Percobaan 
 ![Gambar WhatsApp 2025-11-12 pukul 16 10 52_1bb65599](https://github.com/user-attachments/assets/9d63a140-7cc8-4e91-bdb2-c4a2a165266e)
+
 
 
