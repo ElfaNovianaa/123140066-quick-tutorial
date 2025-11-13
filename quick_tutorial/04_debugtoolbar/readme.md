@@ -1,9 +1,5 @@
 # Percobaan 04 – Easier Development with Debug Toolbar
 
-Dokumen ini mencakup langkah-langkah dan analisis untuk mengintegrasikan **`pyramid_debugtoolbar`** ke dalam proyek Pyramid, sebuah *add-on* esensial yang meningkatkan pengalaman pengembangan dan *debugging* aplikasi.
-
----
-
 ## Deskripsi Singkat
 
 **`pyramid_debugtoolbar`** adalah *add-on* resmi Pyramid yang menyediakan *toolbar* interaktif di *browser*. Toolbar ini menampilkan informasi penting secara visual dan informatif mengenai setiap *request*, *response*, konfigurasi aplikasi, serta menyediakan *traceback* error yang interaktif.
@@ -123,3 +119,4 @@ http://localhost:6543/
 - Dapat diaktifkan hanya melalui konfigurasi .ini tanpa ubah kode.
 - extras_require memungkinkan pemisahan dependensi development dan production.
 - Toolbar memberikan visualisasi error dan request-response yang sangat membantu developer.
+
