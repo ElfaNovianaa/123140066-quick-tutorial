@@ -19,9 +19,9 @@ Prinsip dasar di sini adalah: **View code hanya mengembalikan data Python** (`di
 Dekorator **`@view_config`** dapat ditumpuk (*stacked*) pada satu fungsi *view* yang sama. Setiap dekorator menetapkan aturan *matching* (seperti `route_name`) dan *response* (seperti `renderer='json'`) yang berbeda. Ini adalah cara yang efisien untuk membuat *endpoint* API (JSON) dan *endpoint* halaman (HTML) tanpa duplikasi logika bisnis.
 3. Fungsi JSON Renderer
 JSON *renderer* melakukan tiga tugas utama:
-1.  Mengambil *dictionary* Python yang dikembalikan oleh *view*.
-2.  Mengubahnya menjadi *string* JSON.
-3.  Secara otomatis mengatur *header* **`Content-Type`** *response* ke **`application/json`**.
+- Mengambil *dictionary* Python yang dikembalikan oleh *view*.
+- Mengubahnya menjadi *string* JSON.
+- Secara otomatis mengatur *header* **`Content-Type`** *response* ke **`application/json`**.
 
 ---
 
