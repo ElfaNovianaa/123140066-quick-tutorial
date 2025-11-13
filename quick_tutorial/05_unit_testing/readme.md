@@ -76,5 +76,39 @@ Jalankan pytest dengan menunjuk ke file test:
 $VENV/bin/pytest tutorial/tests.py -q
 ```
 
+## Analisis Konsep Unit Testing
+1. Modul pyramid.testing
+Modul ini adalah alat bantu utama dari Pyramid untuk pengujian. Ia menyediakan fungsi-fungsi untuk:
+- testing.setUp() / testing.tearDown(): Menyiapkan dan membersihkan state konfigurasi Pyramid agar setiap test berjalan dalam lingkungan yang terisolasi.
+- testing.DummyRequest(): Membuat objek request tiruan yang dapat diberikan ke fungsi view aplikasi, meniru request HTTP sungguhan.
+2. Prinsip Isolasi (Isolation)
+Mengimpor fungsi hello_world di dalam metode test_hello_world (bukan di bagian atas file) adalah praktik yang baik. Ini memastikan:
+- Unit Murni: Setiap unit test benar-benar terpisah dan tidak ada side-effect dari import yang dapat memengaruhi test lain atau konfigurasi global.
+- Modularitas: Pengujian lebih modular dan mudah dipindahkan.
+3. Kelebihan Menggunakan pytest
+pytest meningkatkan proses pengujian dibandingkan framework standar unittest karena:
+- Output Informatif: Laporan error lebih jelas, berwarna, dan mudah dibaca.
+- Traceback Detail: Memberikan traceback yang lebih ringkas dan fokus saat terjadi kegagalan (failure).
+- Konfigurasi Minimal: Mudah digunakan untuk proyek kecil hingga besar.
+
+## Eksperimen Debugging dan Asersi
+- Eksperimen 1: Kegagalan Asersi (Assertion Failure)
+Mengubah asersi yang diharapkan dari 200 ke 404:
+```bash
+self.assertEqual(response.status_code, 404
+```
+Hasil: pytest akan menampilkan AssertionError yang menunjukkan dengan jelas bahwa nilai aktual (200) tidak sesuai dengan nilai yang diharapkan (404).
+- Eksperimen 2: Menguji Isi Body Response
+Untuk memastikan konten HTML yang dikembalikan benar, gunakan asersi assertIn pada properti response.body (yang merupakan bytes):
+```bash
+self.assertIn(b"<h1>Hello World!</h1>", response.body)
+```
+Pengujian ini memverifikasi kontrak fungsional view, bukan hanya status HTTP-nya.
+- Eksperimen 3: Menguji Kegagalan Kode (Bug)
+Memasukkan bug (misalnya, memanggil fungsi yang tidak ada) ke dalam view akan menyebabkan test gagal. pytest akan segera menampilkan traceback terperinci, yang jauh lebih efisien daripada menjalankan server dan memeriksa browser secara manual.
+
 ## Output Percobaan
 ![Gambar WhatsApp 2025-11-12 pukul 15 52 26_22e51bf2](https://github.com/user-attachments/assets/057fa3fb-3daa-4301-a811-cd1ad0c6aac1)
+
+## Kesimpulan
+Unit testing, didukung oleh pytest dan pyramid.testing, adalah bagian krusial dalam siklus pengembangan. Metode ini memastikan bahwa setiap komponen kode (unit) berfungsi sesuai ekspektasi, mencegah regresi kode (kerusakan kode lama akibat perubahan baru), dan sangat meningkatkan efisiensi proses debugging.
