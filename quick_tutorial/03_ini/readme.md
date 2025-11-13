@@ -143,3 +143,7 @@ Dalam *entry point* Setuptools (`main = tutorial:main`), kita tidak perlu menyeb
 * **Arti Tanda `**`:** Simbol `**` dalam Python adalah operator untuk **dictionary unpacking** (*membongkar dictionary*), yang memungkinkan argumen pasangan *key-value* diteruskan sebagai argumen bernama (*keyword arguments*) ke dalam sebuah fungsi.
 
 Dalam konteks Pyramid, `**settings` berisi konfigurasi dinamis (seperti *host*, *port*, atau pengaturan *logging*) yang siap digunakan oleh `Configurator` untuk mengatur aplikasi.
+
+## Output Percobaan
+![Gambar WhatsApp 2025-11-12 pukul 15 39 12_6193edf2](https://github.com/user-attachments/assets/2172c301-3ecc-4535-95ce-5f99d2fa21d7)
+
