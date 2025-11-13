@@ -1,27 +1,140 @@
-# Percobaan 7 - Basic Web Handling With Views
-
-## Deskripsi Singkat
-Percobaan ini membahas cara mengorganisasi **views** dalam framework Pyramid agar lebih terstruktur dan mudah dikembangkan. Sebelumnya, fungsi view, route, dan konfigurasi aplikasi masih berada dalam satu file. Pada percobaan ini, semua fungsi view dipindahkan ke modul terpisah `views.py`, kemudian dihubungkan dengan konfigurasi utama melalui **decorator** dan proses **auto scanning** menggunakan `config.scan('.views')`. Selain itu, ditambahkan dua view berbeda yang saling terhubung, yaitu `/` (home) dan `/howdy` (hello).
+# Percobaan 07 – Basic Web Handling dengan Views Terorganisir
 
 ---
 
-## Analysis
-Dalam percobaan ini, proses penanganan web pada Pyramid diatur lebih rapi dengan memisahkan fungsi view dari file utama aplikasi. Modul `views.py` kini berisi dua fungsi utama — `home` dan `hello` — yang masing-masing dihubungkan ke URL berbeda menggunakan **decorator** `@view_config`. Dekorator ini memungkinkan konfigurasi dilakukan secara **declarative**, sehingga tidak perlu lagi menulis konfigurasi manual dengan `config.add_view`.  
+## Konsep Dasar
+percobaan ini menjelaskan restrukturisasi proyek Pyramid untuk memisahkan fungsi *view* ke dalam modul terpisah (`views.py`) dan menggunakan dekorator `@view_config` untuk konfigurasi deklaratif yang lebih rapi dan modular.
 
-Kemudian, konfigurasi utama pada `__init__.py` menjadi lebih ringkas, hanya mengatur route dan memanggil `config.scan('.views')` untuk mendeteksi decorator yang digunakan pada modul `views.py`. Pengujian dilakukan untuk memastikan bahwa setiap view memberikan respons yang benar dan menampilkan konten HTML yang diharapkan. Selain itu, konsep perbedaan antara nama view, nama route, dan URL juga diperlihatkan dalam percobaan ini, menegaskan fleksibilitas Pyramid dalam pemetaan rute.
+Dalam Pyramid, view adalah komponen utama yang menerima permintaan (request) web dan menghasilkan respons (response).
+Sebelumnya, semua logika (fungsi view, route, konfigurasi, dan WSGI app) berada di satu file.
+Pada percobaan ini, kita memindahkan views ke dalam modul tersendiri (views.py) dan menggunakan dekorator @view_config agar lebih rapi dan modular.
+
+Pendekatan ini memungkinkan Pyramid melakukan pemindaian otomatis (config.scan) untuk menemukan dan mendaftarkan view berdasarkan dekorator yang digunakan.
 
 ---
+
+## Langkah Percobaan
+```bash
+cd ..; cp -r functional_testing views; cd views
+$VENV/bin/pip install -e .
+```
+File tutorial/__init__.py
+```bash
+from pyramid.config import Configurator
+
+def main(global_config, **settings):
+    config = Configurator(settings=settings)
+    config.add_route('home', '/')
+    config.add_route('hello', '/howdy')
+    config.scan('.views')
+    return config.make_wsgi_app()
+
+
+File tutorial/views.py
+
+from pyramid.response import Response
+from pyramid.view import view_config
+
+# First view, available at http://localhost:6543/
+@view_config(route_name='home')
+def home(request):
+    return Response('<body>Visit <a href="/howdy">hello</a></body>')
+
+# /howdy
+@view_config(route_name='hello')
+def hello(request):
+    return Response('<body>Go back <a href="/">home</a></body>')
+```
+File tutorial/tests.py
+```bash
+import unittest
+from pyramid import testing
+
+class TutorialViewTests(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_home(self):
+        from .views import home
+        request = testing.DummyRequest()
+        response = home(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Visit', response.body)
+
+    def test_hello(self):
+        from .views import hello
+        request = testing.DummyRequest()
+        response = hello(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Go back', response.body)
+
+class TutorialFunctionalTests(unittest.TestCase):
+    def setUp(self):
+        from tutorial import main
+        app = main({})
+        from webtest import TestApp
+        self.testapp = TestApp(app)
+
+    def test_home(self):
+        res = self.testapp.get('/', status=200)
+        self.assertIn(b'<body>Visit', res.body)
+
+    def test_hello(self):
+        res = self.testapp.get('/howdy', status=200)
+        self.assertIn(b'<body>Go back', res.body)
+```
+Menjalankan Pengujian
+```bash
+$VENV/bin/pytest tutorial/tests.py -q
+```
+Menjalankan Aplikasi
+```bash
+$VENV/bin/pserve development.ini --reload
+```
+Buka di browser:
+```bash    
+http://localhost:6543/
+http://localhost:6543/howdy
+```
+
+## Analisis
+Pada langkah ini, kita menambahkan dua view baru dan memisahkan kode view dari file __init__.py ke modul views.py.
+Pyramid melakukan pemindaian otomatis (auto-scan) terhadap dekorator @view_config di dalam modul views.py melalui perintah config.scan('.views').
+Kedua view ini saling terhubung:
+- Home (route /) menampilkan link menuju halaman hello.
+- hello (route /howdy) memiliki link kembali ke halaman utama.
+Pendekatan ini menunjukkan bahwa nama URL, nama route, dan nama fungsi view tidak harus sama, karena mapping antar keduanya diatur melalui konfigurasi route.
+Selain itu, Pyramid mendukung dua cara konfigurasi:
+- Imperative configuration → menggunakan config.add_view()
+- Declarative configuration → menggunakan dekorator @view_config
+Kedua metode ini menghasilkan hasil akhir yang sama, hanya berbeda dari segi gaya penulisan.
+
+## Extra Credit
+1. Apa arti tanda titik (.) pada .views?
+Titik (.) di depan views menandakan relative import, yang berarti Pyramid akan mencari modul views di dalam package saat ini (tutorial).
+Jika kita menuliskan config.scan('tutorial.views'), itu berarti menggunakan absolute import yang menunjuk ke path penuh modul.
+2. Mengapa assertIn lebih baik daripada assertEqual untuk pengujian isi HTML?
+assertIn hanya memastikan bahwa teks tertentu ada di dalam response body, tanpa membandingkan keseluruhan isi HTML.
+Hal ini membuat pengujian:
+- Lebih toleran terhadap perubahan kecil, seperti whitespace atau urutan atribut.
+- Tidak mudah gagal meskipun layout HTML berubah sedikit.
+Sementara assertEqual terlalu ketat karena membandingkan seluruh string secara identik.
 
 ## Kesimpulan
-Percobaan ini menunjukkan pentingnya pemisahan struktur kode pada aplikasi web Pyramid. Dengan menempatkan fungsi view di modul terpisah dan menggunakan decorator `@view_config`, pengelolaan aplikasi menjadi lebih efisien, mudah dibaca, dan siap untuk pengembangan skala besar. Pendekatan declarative configuration membuat kode lebih bersih sekaligus mempermudah pengujian dan pemeliharaan aplikasi.
-
----
+- View dipisahkan dari __init__.py agar struktur proyek lebih modular dan rapi.
+- Pyramid menggunakan config.scan() untuk menemukan dekorator @view_config.
+- Dua view (home dan hello) berhasil diuji baik secara unit test maupun functional test.
+- assertIn digunakan agar pengujian lebih fleksibel terhadap perubahan tampilan HTML.
+- Pendekatan declarative configuration (@view_config) memudahkan manajemen banyak view dalam satu aplikasi.
 
 ## Output Percobaan
-![Gambar WhatsApp 2025-11-12 pukul 16 55 20_c2dace2f](https://github.com/user-attachments/assets/9625801a-868d-4141-a731-5db888065d74)
+![Gambar WhatsApp 2025-11-12 pukul 16 55 18_3d11d63a](https://github.com/user-attachments/assets/e015d30d-5114-4e38-a13e-83d5fa70d35b)
 
-![Gambar WhatsApp 2025-11-12 pukul 16 58 37_4fb735f7](https://github.com/user-attachments/assets/11027f50-299a-4620-bc4d-2a820b76ded1)
+![Gambar WhatsApp 2025-11-12 pukul 16 58 35_74618349](https://github.com/user-attachments/assets/31ea08a6-cb50-4c38-9dd0-04befd329cb4)
 
-![Gambar WhatsApp 2025-11-12 pukul 16 58 54_3bf7501e](https://github.com/user-attachments/assets/b4dba03a-46b1-45b1-9d95-8ae85f65d64b)
+![Gambar WhatsApp 2025-11-12 pukul 16 58 52_fb555c4f](https://github.com/user-attachments/assets/0a504c33-4d96-4264-8521-90c2a3bc9301)
 
 
