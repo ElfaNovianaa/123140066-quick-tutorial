@@ -91,9 +91,13 @@ Pada tahap lebih lanjut, aplikasi Pyramid sebaiknya dijalankan menggunakan comma
 - Package adalah direktori yang memiliki __init__.py, seperti tutorial.
 - Project adalah keseluruhan struktur yang berisi package dan file konfigurasi seperti setup.py.
 
-Kesimpulan Analisis
+## Output Percobaan
+![Gambar WhatsApp 2025-11-12 pukul 15 17 25_ef4e5fa5](https://github.com/user-attachments/assets/594e7ba3-2da2-4f6b-a801-e5a31224e04c)
+
+## Kesimpulan Analisis
 - Struktur package membuat kode lebih rapi dan mudah dikembangkan.
 - File setup.py memungkinkan integrasi dengan sistem packaging Python dan mempermudah instalasi.
 - Menjalankan aplikasi langsung dari file masih digunakan hanya untuk pembelajaran.
 - Percobaan ini menjadi dasar untuk langkah selanjutnya, yaitu menjalankan aplikasi Pyramid dengan konfigurasi yang lebih profesional.
+
 
