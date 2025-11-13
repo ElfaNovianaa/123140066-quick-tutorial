@@ -1,16 +1,26 @@
-# Percobaan 8 - HTML Generation With Templating
+# Percobaan 8 – HTML Generation With Templating
 
 ## Deskripsi Singkat
-Percobaan ini membahas penggunaan sistem **templating** dalam framework Pyramid untuk menghasilkan halaman HTML secara dinamis tanpa harus menulis kode HTML langsung di dalam file Python. Pyramid sendiri bersifat fleksibel dan tidak memaksa penggunaan template engine tertentu. Dalam percobaan ini digunakan **pyramid_chameleon** sebagai add-on untuk menghubungkan view dengan file template `.pt`.  
-Setiap view kini hanya mengembalikan data dalam bentuk dictionary, sementara proses render HTML dilakukan oleh template yang terpisah. Dengan cara ini, struktur aplikasi menjadi lebih bersih, mudah dikelola, dan sesuai dengan prinsip pemisahan antara **logic** dan **presentation layer**.
+Percobaan ini membahas penggunaan sistem templating pada Pyramid menggunakan *pyramid_chameleon* untuk memisahkan logika program dan tampilan HTML. Hal ini membuat kode lebih bersih, mudah dikelola, dan lebih fleksibel.
 
 ---
 
 ## Analisis
-Pada percobaan ini, penerapan sistem templating membuat kode lebih terorganisir dan profesional. View function kini fokus pada logika Python, sedangkan bagian tampilan ditangani oleh file template `home.pt`. Decorator `@view_config` digunakan untuk menghubungkan view dengan template melalui parameter `renderer`, sehingga data yang dikembalikan dari view otomatis diteruskan ke file HTML untuk dirender.  
-Selain itu, penggunaan template yang sama (`home.pt`) untuk dua route (`/` dan `/howdy`) menunjukkan fleksibilitas sistem templating Pyramid. Pengujian unit juga menjadi lebih sederhana karena view hanya perlu diuji berdasarkan data yang dikembalikannya, bukan isi HTML-nya. Dengan menambahkan `pyramid.reload_templates = true` pada konfigurasi, template akan otomatis dimuat ulang tanpa perlu restart server, sangat membantu dalam tahap pengembangan.
-
----
+1. Fungsi Utama Renderer
+Renderer adalah mekanisme kunci di Pyramid yang memungkinkan view fokus pada logika.
+- View mengembalikan data (misalnya {'name': 'Hello View'}).
+- Pyramid melihat argumen renderer='home.pt' pada @view_config.
+- Renderer memproses data menggunakan template home.pt.
+- Renderer secara otomatis mengemas hasil HTML ke dalam objek pyramid.response.Response HTTP yang dikirim ke client.
+2. Pengujian yang Berfokus pada Data
+Penerapan templating memengaruhi Unit Test:
+- Unit Test: Berubah dari memeriksa body HTML menjadi hanya memeriksa struktur dan nilai data yang dikembalikan oleh view (kontrak data).
+```bash
+self.assertEqual('Home View', response['name'])
+```
+Functional Test: Tetap menguji hasil akhir HTML, memverifikasi bahwa renderer telah menyuntikkan data dengan benar (misalnya, self.assertIn(b'<h1>Hi Home View', res.body)).
+3. Keuntungan Modularitas
+Memisahkan view dan template menciptakan kode yang lebih modular dan lebih mudah dirawat (Maintenance). Perubahan desain HTML tidak memerlukan modifikasi pada kode Python, dan sebaliknya.
 
 ## Kesimpulan
 Percobaan ini menunjukkan bahwa penggunaan templating pada Pyramid sangat membantu dalam memisahkan logika program dari tampilan HTML. Pendekatan ini tidak hanya membuat kode lebih bersih dan mudah dipelihara, tetapi juga mempercepat proses pengembangan. Dengan memanfaatkan `pyramid_chameleon`, setiap perubahan pada tampilan dapat dilakukan langsung di file template tanpa perlu mengubah logika Python.
@@ -23,3 +33,4 @@ Percobaan ini menunjukkan bahwa penggunaan templating pada Pyramid sangat memban
 ![Gambar WhatsApp 2025-11-12 pukul 17 06 35_01ac303a](https://github.com/user-attachments/assets/a010bde3-335b-4e33-bfdf-5c6070d53208)
 
 ![Gambar WhatsApp 2025-11-12 pukul 17 06 48_0e5b8c9c](https://github.com/user-attachments/assets/da33c417-824c-4edb-98f9-0d57415a09e7)
+
