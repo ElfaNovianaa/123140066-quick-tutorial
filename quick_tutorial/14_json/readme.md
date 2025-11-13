@@ -1,27 +1,42 @@
-# Percobaan 9 - Organizing Views With View Classes
+# Percobaan 14 – AJAX Development Dengan JSON Renderers
 
-## Deskripsi Singkat
-Percobaan ini bertujuan untuk mengorganisir fungsi-fungsi view menjadi **kelas view** dalam framework Pyramid. Sebelumnya, setiap view ditulis sebagai fungsi terpisah, namun dalam percobaan ini, view digabungkan dalam satu kelas agar lebih terstruktur, mudah dikelola, dan meminimalkan pengulangan konfigurasi. Dengan menggunakan **@view_defaults**, konfigurasi umum seperti renderer dapat didefinisikan di tingkat kelas dan berlaku untuk seluruh metode di dalamnya.  
-Selain itu, pendekatan ini memungkinkan setiap instance view menyimpan state melalui `__init__`, misalnya untuk menyimpan objek `request`.
+Dokumen ini menjelaskan implementasi *renderer* **JSON** di Pyramid untuk mendukung aplikasi web modern berbasis AJAX, yang meminta data mentah (*data API*) dari *server*.
 
 ---
 
-## Analisis
-Pada percobaan ini, dua view (`home` dan `hello`) digabungkan ke dalam satu kelas bernama `TutorialViews`. Pendekatan ini menyatukan logika yang saling berkaitan dalam satu wadah yang rapi dan efisien. Penggunaan decorator `@view_defaults(renderer='home.pt')` di tingkat kelas membuat kedua metode otomatis menggunakan template yang sama tanpa perlu mendeklarasikannya berulang kali.  
-Dari sisi pengujian, perubahan dilakukan agar sesuai dengan struktur baru — yaitu dengan membuat instance kelas view (`inst = TutorialViews(request)`) sebelum memanggil metode yang diuji. Dengan cara ini, testing tetap berjalan lancar, dan hasil menunjukkan bahwa semua fungsi bekerja sebagaimana mestinya setelah refactoring ke bentuk class-based view.
+## Deskripsi Singkat
+
+Percobaan ini mendemonstrasikan bagaimana Pyramid dapat melayani format *response* yang berbeda (HTML dan JSON) dari **satu fungsi *view* yang sama**. Dengan mendaftarkan *route* baru dan menggunakan dekorator **`@view_config`** secara berlapis (*stacking*), kita mengarahkan *request* ke URL `/howdy.json` agar menggunakan *renderer* `json`, yang secara otomatis mengubah *dictionary* Python menjadi *string* JSON.
+
+---
+
+## Analisis dan Konsep Kunci
+1. View Layer yang Berorientasi Data
+Prinsip dasar di sini adalah: **View code hanya mengembalikan data Python** (`dictionary` atau `list`). Karena *view* `hello()` mengembalikan *dictionary*, Pyramid dapat menggunakan *renderer* yang berbeda pada *output* yang sama:
+* Jika *route* **`hello`** cocok, ia menggunakan *renderer* *default* **`home.pt`** (HTML).
+* Jika *route* **`hello_json`** cocok, ia menggunakan *renderer* **`json`** untuk menghasilkan JSON.
+2. Stacked View Configuration
+Dekorator **`@view_config`** dapat ditumpuk (*stacked*) pada satu fungsi *view* yang sama. Setiap dekorator menetapkan aturan *matching* (seperti `route_name`) dan *response* (seperti `renderer='json'`) yang berbeda. Ini adalah cara yang efisien untuk membuat *endpoint* API (JSON) dan *endpoint* halaman (HTML) tanpa duplikasi logika bisnis.
+3. Fungsi JSON Renderer
+JSON *renderer* melakukan tiga tugas utama:
+1.  Mengambil *dictionary* Python yang dikembalikan oleh *view*.
+2.  Mengubahnya menjadi *string* JSON.
+3.  Secara otomatis mengatur *header* **`Content-Type`** *response* ke **`application/json`**.
+
+---
+
+## Extra Credit
+1. Dependency:** Kita menginstal `pyramid_jinja2` secara manual. Cara lain untuk membuat asosiasi dependency adalah menambahkannya ke daftar `install_requires` di `setup.py` atau menggunakannya sebagai *extra* yang diperlukan dalam distribusi *package* lain.
+2. Konfigurasi Imperatif vs. Deklaratif:** Kita menggunakan `config.include` (imperatif) untuk memuat konfigurasi `pyramid_jinja2`. Cara lain (deklaratif) adalah menambahkannya ke direktif `pyramid.includes` di file konfigurasi `.ini` (misalnya `development.ini`).
 
 ---
 
 ## Kesimpulan
-Melalui percobaan ini, kita belajar bagaimana **view classes** di Pyramid membantu meningkatkan keteraturan dan efisiensi kode. Pendekatan ini memudahkan pengelolaan banyak view yang memiliki konfigurasi serupa serta memungkinkan berbagi state antar metode. Dengan refactoring ini, aplikasi menjadi lebih modular dan mudah dikembangkan di
+Penggunaan *JSON Renderer* di Pyramid adalah cara yang ringkas dan efisien untuk membuat *endpoint* API (Data Services). Dengan memanfaatkan fitur *stacked view configuration*, kita dapat melayani berbagai format *response* (HTML untuk *browser* dan JSON untuk *client* AJAX) dari satu fungsi *view* yang berorientasi data, menjaga kode aplikasi tetap bersih dan modular.
 
---- 
+---
 
 ## Output Percobaan
-![Gambar WhatsApp 2025-11-12 pukul 18 35 11_78496e1b](https://github.com/user-attachments/assets/95f6b38b-112b-4f10-a55c-a5cd655f71f6)
+![Gambar WhatsApp 2025-11-12 pukul 21 24 18_5ef99149](https://github.com/user-attachments/assets/13968c89-e66e-42a8-8a7b-e9795695c640)
 
-![Gambar WhatsApp 2025-11-12 pukul 18 36 05_a7347379](https://github.com/user-attachments/assets/db12a7be-84d1-46ac-92da-898774da26a4)
-
-![Gambar WhatsApp 2025-11-12 pukul 18 36 18_c0cf85d8](https://github.com/user-attachments/assets/91a89f2e-de46-4219-acea-7d9baf193131)
-
-
+![Gambar WhatsApp 2025-11-12 pukul 21 27 25_9235c28f](https://github.com/user-attachments/assets/bb67cbef-0e5c-4831-a239-87f9ae04e29f)
