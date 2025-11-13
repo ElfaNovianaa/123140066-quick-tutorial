@@ -1,22 +1,80 @@
-# Percobaan 5 - Unit Tests and pytest
+# Percobaan 05 – Unit Tests dan pytest
 
 ## Deskripsi Singkat
-Percobaan ini bertujuan untuk mengimplementasikan **unit testing** pada proyek Pyramid menggunakan **pytest**. Dengan menambahkan `pytest` ke dalam dependensi proyek, pengujian kode dapat dilakukan secara otomatis tanpa harus menjalankan aplikasi di browser. Pengujian ini memastikan setiap fungsi dalam aplikasi berjalan sesuai harapan dan membantu mendeteksi bug sejak dini.
+
+Percobaan ini menjelaskan integrasi **Unit Testing** ke dalam proyek Pyramid menggunakan *framework* **`pytest`** dan modul `pyramid.testing`. Tujuannya adalah memastikan kebenaran fungsi kode tanpa perlu menjalankan aplikasi secara penuh di *browser*.
+
+**Unit Test** adalah proses pengujian bagian terkecil (unit) dari kode, seperti fungsi *view*, untuk memastikan ia bekerja sesuai kontrak yang diharapkan. Dengan bantuan `pytest`, proses pengujian menjadi **otomatis, efisien, dan memberikan laporan *error* yang sangat informatif**.
 
 ---
 
-## Analisis
-Dalam percobaan ini, dilakukan pengujian fungsi `hello_world` menggunakan `pytest` dan modul `unittest`. Framework `pytest` membantu mempermudah proses testing dengan hasil yang lebih informatif dan efisien. Pada pengujian, digunakan `DummyRequest` dari modul `pyramid.testing` untuk mensimulasikan request tanpa perlu menjalankan server sebenarnya. Dengan cara ini, kita dapat memastikan bahwa fungsi view mengembalikan **HTTP status code 200**, yang berarti fungsi berjalan sesuai ekspektasi.
+## Langkah-Langkah Implementasi
 
-Selain itu, penggunaan `testing.setUp()` dan `testing.tearDown()` memastikan setiap pengujian dilakukan dalam kondisi yang bersih dan terisolasi, mencegah konfigurasi antar-test saling memengaruhi. Pengujian unit semacam ini penting untuk menjaga kualitas kode, terutama saat aplikasi berkembang dan mengalami perubahan signifikan di masa depan.
+1. Salin dan Siapkan Proyek
+```bash
+cd ..
+cp -r debugtoolbar unit_testing
+cd unit_testing
+```
+2. Tambahkan pytest ke Dependency di setup.py
+Tambahkan pytest ke dalam bagian dependency pengembangan (dev_requires).
+```bash
+from setuptools import setup
 
----
+# ...
 
-## Kesimpulan
-Melalui percobaan ini, dapat disimpulkan bahwa **unit testing** merupakan bagian penting dalam proses pengembangan perangkat lunak untuk memastikan keandalan dan kestabilan kode. Dengan bantuan **pytest**, proses pengujian menjadi lebih mudah, cepat, dan terstruktur. Pendekatan ini membantu developer menemukan kesalahan sejak awal tanpa harus menjalankan aplikasi secara manual di browser.
+dev_requires = [
+    'pyramid_debugtoolbar',
+    'pytest', # Tambahkan pytest di sini
+]
 
----
+setup(
+    # ...
+    extras_require={
+        'dev': dev_requires,
+    },
+    # ...
+)
+```
+3. Instal Proyek dan Dependency Pengujian
+Instal package proyek beserta dependency pengembangan opsional (dev):
+```Bash
+$VENV/bin/pip install -e ".[dev]"
+```
+4. Buat File Test Baru
+Buat file tutorial/tests.py untuk menampung kelas pengujian.
+File: tutorial/tests.py
+```bash
+import unittest
+from pyramid import testing
+
+class TutorialViewTests(unittest.TestCase):
+    def setUp(self):
+        # Menyiapkan konfigurasi Pyramid sebelum setiap test
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        # Membersihkan konfigurasi setelah setiap test selesai
+        testing.tearDown()
+
+    def test_hello_world(self):
+        # Import fungsi view di dalam test untuk menjaga isolasi
+        from tutorial import hello_world 
+
+        # Membuat permintaan tiruan (dummy request)
+        request = testing.DummyRequest()
+        
+        # Memanggil fungsi view
+        response = hello_world(request)
+        
+        # Asersi: Memastikan kode status HTTP adalah 200 (OK)
+        self.assertEqual(response.status_code, 200)
+```
+5. Jalankan Pengujian dengan pytest
+Jalankan pytest dengan menunjuk ke file test:
+```Bash
+$VENV/bin/pytest tutorial/tests.py -q
+```
 
 ## Output Percobaan
-![Gambar WhatsApp 2025-11-12 pukul 15 52 28_600fa7e9](https://github.com/user-attachments/assets/41577438-9690-4ada-8885-f55f884b06ee)
-
+![Gambar WhatsApp 2025-11-12 pukul 15 52 26_22e51bf2](https://github.com/user-attachments/assets/057fa3fb-3daa-4301-a811-cd1ad0c6aac1)
