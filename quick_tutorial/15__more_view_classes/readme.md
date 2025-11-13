@@ -1,25 +1,62 @@
-# Percobaan 8 - HTML Generation With Templating
+# Percobaan 15 – Advanced View Classes dan View Predicates
 
-## Deskripsi Singkat
-Percobaan ini membahas penggunaan sistem **templating** dalam framework Pyramid untuk menghasilkan halaman HTML secara dinamis tanpa harus menulis kode HTML langsung di dalam file Python. Pyramid sendiri bersifat fleksibel dan tidak memaksa penggunaan template engine tertentu. Dalam percobaan ini digunakan **pyramid_chameleon** sebagai add-on untuk menghubungkan view dengan file template `.pt`.  
-Setiap view kini hanya mengembalikan data dalam bentuk dictionary, sementara proses render HTML dilakukan oleh template yang terpisah. Dengan cara ini, struktur aplikasi menjadi lebih bersih, mudah dikelola, dan sesuai dengan prinsip pemisahan antara **logic** dan **presentation layer**.
+Dokumen ini menjelaskan penggunaan fitur *View Class* Pyramid secara mendalam untuk mengelompokkan *view*, berbagi *state* dan logika, serta menggunakan **View Predicates** untuk mengarahkan satu URL ke berbagai metode *view* berdasarkan kondisi *request*.
 
 ---
 
-## Analisis
-Pada percobaan ini, penerapan sistem templating membuat kode lebih terorganisir dan profesional. View function kini fokus pada logika Python, sedangkan bagian tampilan ditangani oleh file template `home.pt`. Decorator `@view_config` digunakan untuk menghubungkan view dengan template melalui parameter `renderer`, sehingga data yang dikembalikan dari view otomatis diteruskan ke file HTML untuk dirender.  
-Selain itu, penggunaan template yang sama (`home.pt`) untuk dua route (`/` dan `/howdy`) menunjukkan fleksibilitas sistem templating Pyramid. Pengujian unit juga menjadi lebih sederhana karena view hanya perlu diuji berdasarkan data yang dikembalikannya, bukan isi HTML-nya. Dengan menambahkan `pyramid.reload_templates = true` pada konfigurasi, template akan otomatis dimuat ulang tanpa perlu restart server, sangat membantu dalam tahap pengembangan.
+## Deskripsi Singkat
+
+Percobaan ini merestrukturisasi *view* untuk menangani empat operasi berbeda (GET halaman utama, GET formulir, POST Save/Edit, dan POST Delete) menggunakan **satu *route* utama** (`/howdy/{first}/{last}`). Semua logika ini dikelompokkan dalam kelas **`TutorialViews`**. Kami menggunakan dekorator **`@view_defaults`** untuk *default route* dan **View Predicates** (`request_method`, `request_param`) pada `@view_config` untuk menentukan metode mana yang akan dieksekusi berdasarkan *request* yang masuk.
+
+---
+
+## Analisis 
+1. Pengelompokan dan Berbagi State
+Seluruh *view* yang terkait (`hello`, `edit`, `delete`) dikelompokkan dalam **`TutorialViews`**, sementara `home` tetap didefinisikan secara terpisah. Kelas ini memungkinkan pembagian informasi:
+
+* **Berbagi State (`__init__`)**: Variabel seperti `self.view_name = 'TutorialViews'` didefinisikan di `__init__` dan tersedia di semua metode *view* dan *template* (diakses sebagai `${view.view_name}`).
+* **Berbagi Logika (`@property`)**: Metode Python **`@property`** (`full_name`) digunakan untuk menghitung nilai dinamis (`first + ' ' + last`) berdasarkan `request.matchdict`.
+
+View Predicates untuk Dispatching
+Tujuan utama dari percobaan ini adalah menggunakan **View Predicates** untuk memetakan satu URL *path* (`/howdy/first/last`) ke beberapa metode *view* berbeda:
+
+* **Predikat `request_method='POST'`**: Metode `edit()` akan dieksekusi hanya jika *request* menggunakan metode `POST`.
+* **Predikat `request_param='form.delete'`**: Metode `delete()` hanya dieksekusi jika *request* adalah `POST` **dan** mengandung parameter `form.delete` (yang dikirim saat tombol "Delete" diklik). Predikat ini bertindak sebagai filter yang lebih spesifik daripada predikat `POST` biasa.
+
+3. Centralized Configuration (`@view_defaults`)
+Dekorator `@view_defaults(route_name='hello')` di tingkat kelas menetapkan bahwa semua metode *view* di dalamnya (kecuali yang di-*override*) akan menggunakan *route* bernama **`hello`** secara *default*. Ini menyederhanakan deklarasi pada setiap metode *view*.
+
+4. URL Generation Fleksibel
+Pyramid menyediakan *helper* `request.route_url()` untuk menghasilkan URL secara aman. Contoh: `${request.route_url('hello', first='jane', last='doe')}`. Ini memastikan bahwa URL yang dihasilkan selalu sinkron dengan definisi *route* yang ada dan bebas dari kesalahan penulisan *path* manual.
+
+---
+
+## Extra Credit
+1. Mengapa `template` dapat memanggil `${view.full_name}` tanpa kurung?**
+Karena `full_name` didekorasi dengan **`@property`** di Python. Dekorator ini mengubah metode menjadi atribut yang diakses seolah-olah itu adalah variabel. Ketika *template* mengaksesnya, kode di balik metode tersebut dieksekusi.
+
+2. Mengapa *view* `edit` tidak menangkap `POST` yang digunakan oleh `delete`?**
+Meskipun `edit()` juga memiliki `request_method='POST'`, *view* **`delete()`** memiliki predikat yang **lebih spesifik** (`request_param='form.delete'`). Pyramid selalu mencocokkan *view* berdasarkan urutan spesifisitas. Karena `delete` memiliki predikat *request parameter* yang lebih ketat, ia diprioritaskan dan dieksekusi sebelum *view* `edit`.
+
+3. Cache untuk `@property`?**
+Ya. Pyramid menyediakan dekorator **`@reify`** (atau seringkali menggunakan `functools.cached_property` di Python modern) yang dapat digunakan pada properti *view class*. Dekorator ini menghitung nilai properti hanya **sekali** per *request* dan menyimpan hasilnya sebagai atribut *instance* (`self.full_name`), memastikan komputasi ulang tidak terjadi meskipun dipanggil berkali-kali dalam *view* atau *template* yang sama.
+
+4. Bisakah mengasosiasikan lebih dari satu *route* dengan *view* yang sama?**
+Ya. Hal ini dilakukan persis seperti yang kita lihat di Percobaan 14 dan Percobaan ini: dengan menumpuk beberapa dekorator **`@view_config`** di atas satu metode *view* yang sama, masing-masing menunjuk ke nama *route* yang berbeda.
+
+5. Perbedaan `request.route_path` dan `request.route_url`?**
+* **`request.route_url`**: Menghasilkan **URL lengkap** (termasuk skema dan *hostname*, e.g., `http://localhost:6543/howdy/jane/doe`).
+* **`request.route_path`**: Menghasilkan **path relatif** (e.g., `/howdy/jane/doe`). Ini lebih umum digunakan di *template* untuk tautan internal.
 
 ---
 
 ## Kesimpulan
-Percobaan ini menunjukkan bahwa penggunaan templating pada Pyramid sangat membantu dalam memisahkan logika program dari tampilan HTML. Pendekatan ini tidak hanya membuat kode lebih bersih dan mudah dipelihara, tetapi juga mempercepat proses pengembangan. Dengan memanfaatkan `pyramid_chameleon`, setiap perubahan pada tampilan dapat dilakukan langsung di file template tanpa perlu mengubah logika Python.
-
----
+Penggunaan **View Classes** adalah pola kunci dalam Pyramid untuk membangun aplikasi yang terstruktur. Kelas memungkinkan *view* yang terkait untuk berbagi *state* dan logika, sementara **View Predicates** memberikan kontrol granular atas *dispatching* *request*. Ini memungkinkan satu *route* URL melayani banyak fungsi (GET, POST Edit, POST Delete) dengan kode yang bersih dan terpusat.
 
 ## Output Percobaan
-![Gambar WhatsApp 2025-11-12 pukul 17 05 04_eef682be](https://github.com/user-attachments/assets/ab8a5945-de97-4865-834f-c9d6e806c548)
+![Gambar WhatsApp 2025-11-12 pukul 21 35 26_541a054d](https://github.com/user-attachments/assets/336a5ef1-8b78-496b-a455-9ea9b818c00f)
 
-![Gambar WhatsApp 2025-11-12 pukul 17 06 35_01ac303a](https://github.com/user-attachments/assets/a010bde3-335b-4e33-bfdf-5c6070d53208)
+![Gambar WhatsApp 2025-11-12 pukul 21 39 50_df25b770](https://github.com/user-attachments/assets/72cb5398-08da-4b46-90c6-2936f4650f13)
 
-![Gambar WhatsApp 2025-11-12 pukul 17 06 48_0e5b8c9c](https://github.com/user-attachments/assets/da33c417-824c-4edb-98f9-0d57415a09e7)
+![Gambar WhatsApp 2025-11-12 pukul 21 39 34_ca280040](https://github.com/user-attachments/assets/5591a133-2b7e-4392-981c-831d2666b6b6)
+
