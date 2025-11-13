@@ -1,54 +1,145 @@
 # Percobaan 3 – Application Configuration with .ini Files
 
 ## Deskripsi Singkat
-Percobaan ini memperkenalkan cara **menjalankan aplikasi Pyramid menggunakan file konfigurasi `.ini`** dan perintah `pserve`.  
-Pendekatan ini memisahkan konfigurasi dari kode, membuat aplikasi lebih mudah diatur, dikelola, dan dijalankan secara profesional.
+Pada percobaan ini, kita mulai menggunakan file konfigurasi `.ini` dan perintah `pserve` milik Pyramid.  
+Pendekatan ini memisahkan konfigurasi dari kode, menjadikan aplikasi lebih mudah dikelola, fleksibel, dan sesuai dengan standar pengembangan aplikasi berbasis WSGI.
 
 ---
 
-## Arsitektur Dasar
-Pada tahap ini, kita menambahkan konsep **konfigurasi eksternal** ke dalam struktur proyek.  
-File penting yang digunakan adalah:
-
-- **`setup.py`** → Menentukan *entry point* `paste.app_factory` untuk memberi tahu Pyramid di mana menemukan aplikasi WSGI.
-- **`development.ini`** → File konfigurasi utama yang berisi pengaturan server, port, dan aplikasi.
-- **`__init__.py`** → Tempat mendefinisikan fungsi `main()` yang membuat dan mengembalikan instance aplikasi Pyramid.
+## Tujuan
+1. Menambahkan entry point dalam `setup.py` untuk mendefinisikan lokasi WSGI app.  
+2. Membuat file konfigurasi `.ini` untuk menjalankan aplikasi.  
+3. Memindahkan kode inisialisasi aplikasi ke dalam `__init__.py`.  
+4. Menjalankan aplikasi menggunakan perintah `pserve`.  
 
 ---
 
-## Penjelasan Konsep Utama
-- **Konfigurasi berbasis `.ini`**  
-  Pyramid membaca pengaturan aplikasi dan server dari file `.ini`, bukan dari kode langsung. Ini memisahkan logika aplikasi dari pengaturan runtime.
-- **Entry Point pada `setup.py`**  
-  Dengan menambahkan *entry point* `paste.app_factory`, Pyramid tahu di mana menemukan fungsi `main()` yang membangun aplikasi.
-- **Fungsi `main()` di `__init__.py`**  
-  Fungsi ini menggantikan peran `app.py` dari percobaan sebelumnya. Di sinilah konfigurasi route, view, dan pembuatan WSGI app dilakukan.
-- **Menjalankan Aplikasi dengan `pserve`**  
-  Perintah `pserve development.ini --reload` digunakan untuk menjalankan server. Opsi `--reload` memungkinkan aplikasi otomatis memuat ulang saat terjadi perubahan file.
+## Langkah-langkah Percobaan
+
+### 1. Menyalin hasil percobaan sebelumnya
+```bash
+cd ..
+cp -r package ini
+cd ini
+```
+2. Membuat file setup.py
+```bash
+from setuptools import setup
+
+requires = [
+    'pyramid',
+    'waitress',
+]
+
+setup(
+    name='tutorial',
+    install_requires=requires,
+    entry_points={
+        'paste.app_factory': [
+            'main = tutorial:main'
+        ],
+    },
+)
+```
+3. Instalasi proyek
+```bash
+$VENV/bin/pip install -e .
+```
+5. Membuat file konfigurasi development.ini
+[app:main]
+```bash
+use = egg:tutorial
+
+[server:main]
+use = egg:waitress#main
+listen = localhost:6543
+
+5. Memindahkan kode aplikasi ke tutorial/__init__.py
+from pyramid.config import Configurator
+from pyramid.response import Response
+
+def hello_world(request):
+    return Response('<body><h1>Hello World!</h1></body>')
+
+def main(global_config, **settings):
+    config = Configurator(settings=settings)
+    config.add_route('hello', '/')
+    config.add_view(hello_world, route_name='hello')
+    return config.make_wsgi_app()
+```
+6. Menghapus file app.py
+```bash
+rm tutorial/app.py
+```
+8. Menjalankan aplikasi dengan pserve
+```bash
+$VENV/bin/pserve development.ini --reload
+```
+Buka browser dan akses:
+```bash
+http://localhost:6543/
+```
+
+# Analisis Konfigurasi Aplikasi Pyramid (development.ini & Struktur Kode)
+
+Dokumen ini menjelaskan fungsi utama dari file konfigurasi `development.ini`, alasan pemindahan kode *startup* ke `__init__.py`, dan menjawab beberapa pertanyaan kunci terkait struktur proyek berbasis Pyramid dan Setuptools.
 
 ---
 
-## Analisis
+## Konsep Dasar `development.ini` dan `pserve`
 
-Percobaan ini menunjukkan peralihan dari pendekatan manual ke sistem konfigurasi yang lebih terintegrasi.  
-Dengan `.ini`, Pyramid menerapkan **pemisahan antara kode dan konfigurasi**, yang membuat aplikasi lebih mudah diatur dan di-*deploy*.
+File `development.ini` adalah *blueprint* yang digunakan oleh perintah `pserve` untuk mem-*boot* aplikasi.
 
-Analisis poin penting:
-- File `development.ini` bertindak sebagai **pusat kontrol**. Ia menentukan aplikasi mana yang dijalankan (`[app:main]`) dan bagaimana server dikonfigurasi (`[server:main]`).
-- File `setup.py` memperkenalkan **entry point**, konsep yang memungkinkan Pyramid memanggil fungsi utama tanpa hardcoding.
-- Pemindahan fungsi `main()` ke `__init__.py` memperkuat prinsip **modularitas** — kode lebih rapi dan siap dikembangkan menjadi aplikasi besar.
-- Fitur `--reload` saat menjalankan `pserve` meningkatkan **efisiensi pengembangan**, karena perubahan otomatis diterapkan tanpa restart manual.
-- Pendekatan ini juga memudahkan penggunaan **beberapa file konfigurasi** (misalnya untuk mode development, testing, dan production).
+* **[app:main]:** Menunjuk ke *entry point* aplikasi WSGI yang sebenarnya.
+    * `use = egg:tutorial` → Memanggil *entry point* bernama `main` yang didefinisikan dalam paket `tutorial` di file `setup.py`.
 
-Secara keseluruhan, percobaan ini memperlihatkan bagaimana Pyramid mengintegrasikan manajemen konfigurasi tingkat lanjut untuk mendukung pengembangan aplikasi yang **fleksibel, scalable, dan maintainable**.
+* **[server:main]:** Mengatur server WSGI yang akan digunakan (misalnya, Waitress).
+    * `listen = localhost:6543` → Mengatur *host* dan *port* untuk server.
 
----
+File ini juga bertanggung jawab untuk menangani **konfigurasi logging** yang digunakan oleh kerangka kerja Pyramid.
 
-## Output Percobaan
-
-![Gambar WhatsApp 2025-11-12 pukul 15 39 14_65c33026](https://github.com/user-attachments/assets/1e7e897b-86bd-4bac-a867-facbeca51128)
+> **Opsi `--reload`:** Penggunaan `--reload` pada `pserve` selama pengembangan sangat penting, karena membuat aplikasi otomatis *restart* setiap kali ada perubahan pada file Python atau `.ini`.
 
 ---
 
-**Kesimpulan:**  
-Pyramid kini beralih ke sistem berbasis konfigurasi `.ini` yang membuat proses pengaturan aplikasi lebih efisien dan terstandarisasi.  
+## Mengapa Kode Startup Dipindahkan ke `__init__.py`
+
+Kode *startup* utama (yang biasanya ada di `app.py`) dipindahkan ke `__init__.py` untuk mengikuti **struktur standar paket Python** dan memudahkan integrasi dengan Setuptools:
+
+1.  **Sesuai Struktur Pyramid:** Memungkinkan Pyramid untuk mengetahui titik awal aplikasi (`main`) langsung dari *package* (`tutorial`) tanpa perlu mengeksekusi file Python spesifik.
+2.  **Entry Point Setuptools:** Gaya ini mempermudah proses instalasi dan integrasi aplikasi melalui *entry point* yang didefinisikan di `setup.py`.
+
+---
+
+## Pertanyaan Ekstra (Extra Credit)
+
+### 1. Bisakah Konfigurasi `.ini` Diganti dengan Python?
+
+Ya, konfigurasi dari `.ini` **bisa** diganti sepenuhnya dengan kode Python, menggunakan konstruktor `Configurator(settings=...)`.
+
+Namun, menggunakan file `.ini` sangat direkomendasikan karena:
+* **Pemisahan:** Memisahkan kode logika dan konfigurasi.
+* **Fleksibilitas:** Konfigurasi dapat diubah tanpa menyentuh dan menyebarkan ulang logika program.
+* **Pengelolaan Lingkungan:** Memungkinkan pengelolaan konfigurasi yang berbeda untuk lingkungan **development**, **testing**, dan **production**.
+
+### 2. Apakah Mungkin Memiliki Beberapa File `.ini`?
+
+**Ya**, ini adalah praktik yang umum dan dianjurkan.
+Contoh:
+* `development.ini`: Untuk pengembangan lokal, dengan mode *debug* aktif.
+* `production.ini`: Untuk server produksi, dengan pengaturan *logging* dan *performa* yang berbeda.
+
+Hal ini memudahkan *switching* antara konfigurasi tanpa mengubah kode dan menyesuaikan parameter seperti *port*, *database*, atau *middleware* sesuai lingkungan kerja.
+
+### 3. Mengapa `__init__.py` Tidak Disebutkan di `setup.py`?
+
+Dalam *entry point* Setuptools (`main = tutorial:main`), kita tidak perlu menyebutkan `__init__.py` karena:
+
+* **Konvensi Python:** Ketika kita mereferensikan modul atau fungsi di tingkat *package* (misalnya `tutorial:main`), Python secara otomatis mencari fungsi `main()` di dalam modul utama *package* tersebut, yaitu `tutorial/__init__.py`.
+
+### 4. Apa Fungsi dari `**settings` dalam Fungsi `main()`?
+
+* **Fungsi:** Parameter `**settings` menerima semua pasangan *key-value* konfigurasi dari file `.ini` (di bawah bagian `[app:main]`) dan meneruskannya ke fungsi `main()` aplikasi dalam bentuk sebuah **dictionary**.
+* **Arti Tanda `**`:** Simbol `**` dalam Python adalah operator untuk **dictionary unpacking** (*membongkar dictionary*), yang memungkinkan argumen pasangan *key-value* diteruskan sebagai argumen bernama (*keyword arguments*) ke dalam sebuah fungsi.
+
+Dalam konteks Pyramid, `**settings` berisi konfigurasi dinamis (seperti *host*, *port*, atau pengaturan *logging*) yang siap digunakan oleh `Configurator` untuk mengatur aplikasi.
